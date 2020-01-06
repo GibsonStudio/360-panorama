@@ -22,6 +22,7 @@ function Pano (args) {
   this.fovMax = args.fovMax || 90;
   this.fovIni = args.fovIni || 75;
   this.loadedScene = args.loadedScene || '';
+  this.activeControl = false;
 
 
   this.load = function (panoSceneID, args) {
@@ -65,6 +66,14 @@ function Pano (args) {
 
   }
 
+
+  this.toggleAutorotate = function () {
+    this.autoRotate = !this.autoRotate;
+  }
+
+  this.runFullscreen = function () {
+    document.getElementById("my-container").requestFullscreen();
+  }
 
 }
 

@@ -1,7 +1,6 @@
 
 
 
-//TODO: move activeCOntrol to pano.activeControl
 
 // config vars
 var dummy = (typeof dummy === 'undefined') ? {} : dummy;
@@ -15,11 +14,9 @@ var mouse = {};
 mouse.x = 0;
 mouse.y = 0;
 
-//var keys = {};
 var container, camera, scene, renderer, mesh;
 var panoMesh, panoMaterial;
 var pano = new Pano();
-var activeControl = false;
 
 
 
@@ -34,16 +31,6 @@ function animate ()
     var p = getDummyPosition();
     dummy.position = [p.x, p.y, p.z];
   }
-
-  /*
-  var p = getTargetPosition();
-
-  camera.target.x = p.x;
-  camera.target.y = p.y;
-  camera.target.z = p.z;
-  camera.lookAt(camera.target);
-  */
-
 
   positionCamera();
 
@@ -108,7 +95,6 @@ function init ()
   var canvasEl = document.getElementById("my-canvas-container"); // ("my-container");
 
   // mouse event handlers
-  //document.getElementById('my-container').addEventListener('mousedown', function (e) { panoClicked(e); });
   canvasEl.addEventListener('mousedown', function (e) { panoClicked(e); });
   document.addEventListener('mousemove', function (e) { eventMove(e); });
   document.addEventListener('mouseup', function (e) { eventStop(e); });
@@ -127,28 +113,22 @@ function init ()
 
 
 
-function toggleAutorotate ()
-{
-  pano.autoRotate = !pano.autoRotate;
-}
-
-
 
 function checkControls ()
 {
 
-  if (activeControl) { pano.active = false; }
+  if (pano.activeControl) { pano.active = false; }
 
-  if (activeControl == 'move-left') { pano.lon += 1; }
-  else if (activeControl == 'move-right') { pano.lon -= 1; }
-  else if (activeControl == 'move-up') { pano.lat -= 1; }
-  else if (activeControl == 'move-down') { pano.lat += 1; }
-  else if (activeControl == 'zoom-in') {
+  if (pano.activeControl == 'move-left') { pano.lon += 1; }
+  else if (pano.activeControl == 'move-right') { pano.lon -= 1; }
+  else if (pano.activeControl == 'move-up') { pano.lat -= 1; }
+  else if (pano.activeControl == 'move-down') { pano.lat += 1; }
+  else if (pano.activeControl == 'zoom-in') {
     var fov = camera.fov - 1;
     camera.fov = THREE.Math.clamp(fov, pano.fovMin, pano.fovMax);
     camera.updateProjectionMatrix();
   }
-  else if (activeControl == 'zoom-out') {
+  else if (pano.activeControl == 'zoom-out') {
     var fov = camera.fov + 1;
     camera.fov = THREE.Math.clamp(fov, pano.fovMin, pano.fovMax);
     camera.updateProjectionMatrix();
@@ -164,10 +144,6 @@ function checkControls ()
 }
 
 
-function runFullscreen ()
-{
-  document.getElementById("my-container").requestFullscreen();
-}
 
 
 function ToggleHelp ()
@@ -332,7 +308,7 @@ function eventStop (e)
 
   e.preventDefault();
 
-  activeControl = false;
+  pano.activeControl = false;
   dummy.active = false;
   var clickTolerance = 2;
   pano.active = false;

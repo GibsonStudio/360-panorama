@@ -35,14 +35,14 @@
 
     <div id="controls-container">
       <div class="pano-button" id="home" title="Home" style="left:10px; top:30px;" onclick="panoScenes[0].load();"></div>
-      <div class="pano-button" id="arrow-left" style="left:60px; top:30px;" onmousedown="activeControl='move-left';"></div>
-      <div class="pano-button" id="arrow-up" style="left:85px; top:5px;" onmousedown="activeControl='move-up';"></div>
-      <div class="pano-button" id="arrow-down" style="left:85px; top:55px;" onmousedown="activeControl='move-down';"></div>
-      <div class="pano-button" id="arrow-right" style="left:110px; top:30px;" onmousedown="activeControl='move-right';"></div>
-      <div class="pano-button" id="zoom-in" title="Zoom In" style="left:160px; top:30px;" onmousedown="activeControl='zoom-in';"></div>
-      <div class="pano-button" id="zoom-out" title="Zoom Out" style="left:195px; top:30px;" onmousedown="activeControl='zoom-out';"></div>
-      <div class="pano-button" id="auto-rotate" title="Start/Stop Autorotation" style="left:245px; top:30px;" onmousedown="toggleAutorotate();"></div>
-      <div class="pano-button" id="fullscreen" title="Fullscreen" style="left:280px; top:30px;" onclick="runFullscreen();"></div>
+      <div class="pano-button" id="arrow-left" style="left:60px; top:30px;" onmousedown="pano.activeControl='move-left';"></div>
+      <div class="pano-button" id="arrow-up" style="left:85px; top:5px;" onmousedown="pano.activeControl='move-up';"></div>
+      <div class="pano-button" id="arrow-down" style="left:85px; top:55px;" onmousedown="pano.activeControl='move-down';"></div>
+      <div class="pano-button" id="arrow-right" style="left:110px; top:30px;" onmousedown="pano.activeControl='move-right';"></div>
+      <div class="pano-button" id="zoom-in" title="Zoom In" style="left:160px; top:30px;" onmousedown="pano.activeControl='zoom-in';"></div>
+      <div class="pano-button" id="zoom-out" title="Zoom Out" style="left:195px; top:30px;" onmousedown="pano.activeControl='zoom-out';"></div>
+      <div class="pano-button" id="auto-rotate" title="Start/Stop Autorotation" style="left:245px; top:30px;" onmousedown="pano.toggleAutorotate();"></div>
+      <div class="pano-button" id="fullscreen" title="Fullscreen" style="left:280px; top:30px;" onclick="pano.runFullscreen();"></div>
     </div>
 
   </div>

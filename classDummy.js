@@ -6,7 +6,6 @@ var enableDummy = (typeof enableDummy === 'undefined') ? false : enableDummy;
 function Dummy (args) {
 
   var args = args || {};
-  this.keys = {};
   this.active = false;
   this.speedFactor = args.speedFactor || 0.5;
   this.distanceFromOrigin = args.distanceFromOrigin || 430;
