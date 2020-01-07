@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<scenes>
+
+  <scene id="e1" image="e1.jpg" lon="207" lat="3.8">
+    <hotspot id="i2" title="Interior" x="184" y="114.2" z="371.5" lat="11.3" lon="217.7"></hotspot>
+    <hotspot id="i2-2" link="i2" title="TEST" x="335.8" y="104" z="247.6" ></hotspot>
+  </scene>
+
+  <scene id="i2" image="i2.jpg" lon="132" lat="3.5">
+    <hotspot id="e1" x="300.7" y="-169.1" z="-256.8"></hotspot>
+  </scene>
+
+
+</scenes>

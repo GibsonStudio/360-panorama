@@ -106,7 +106,8 @@ function Dummy (args) {
 
   this.keyDown = function (e) {
     if (e.code == 'KeyR') { this.reset(); }
-    if (e.code == 'KeyI') { this.outputInfo(); }
+    if (e.code == 'KeyH') { this.outputHotspotInfo(); }
+    if (e.code == 'KeyP') { this.outputPanoInfo(); }
   }
 
 
@@ -120,23 +121,34 @@ function Dummy (args) {
   }
 
 
-  this.outputInfo = function () {
+  this.outputHotspotInfo = function () {
 
      var p = this.position;
 
      // round numbers
      for (var i = 0; i < 3; i++) {
-       p[i] = p[i].toFixed(2) * 1;
+       p[i] = p[i].toFixed(1) * 1;
      }
 
-     var info = 'panoScene.hotspots.push(new PanoHotspot({ id:\'ID\', ';
-     info += 'position:[' + p[0] + ',' + p[1] +',' + p[2] + ']';
-     info += ' }));';
+     var info = '<hotspot id="" ';
+     info += 'x="' + p[0] + '" ';
+     info += 'y="' + p[1] + '" ';
+     info += 'z="' + p[2] + '" ';
+     info += '></hotspot>';
 
      console.log(info);
 
   }
 
+
+  this.outputPanoInfo = function () {
+
+    console.log("id:" + pano.loadedScene.id);
+    var info = 'lon="' + pano.lon + '" ';
+    info += 'lat="' + pano.lat + '"';
+    console.log(info);
+
+  }
 
 
 

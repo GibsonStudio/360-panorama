@@ -1,5 +1,8 @@
 
 
+//TODO: make scenes data in xml format
+
+
 
 
 // config vars
@@ -17,6 +20,65 @@ mouse.y = 0;
 var container, camera, scene, renderer, mesh;
 var panoMesh, panoMaterial;
 var pano = new Pano();
+var panoScenes = [];
+
+
+
+
+function loadXML ()
+{
+
+  $.ajax({
+    url:"scenes.xml",
+    type:"GET",
+    dataTYpe:"xml"
+  }).done(function (data) { parseXML(data); });
+
+}
+
+
+
+function parseXML (data)
+{
+
+  console.log("XML loaded....");
+
+  $(data).find("scene").each(function () {
+
+    var id = $(this).attr("id");
+    var img = $(this).attr("image");
+    var lon = parseFloat($(this).attr("lon"));
+    var lat = parseFloat($(this).attr("lat"));
+
+    var panoScene = new PanoScene({ id:id, texture:img, lon:lon, lat:lat });
+
+    $(this).find("hotspot").each(function () {
+
+      var id = $(this).attr("id");
+      var link = $(this).attr("link");
+      var title = $(this).attr("title");
+      var x = parseFloat($(this).attr("x"));
+      var y = parseFloat($(this).attr("y"));
+      var z = parseFloat($(this).attr("z"));
+      var lon = parseFloat($(this).attr("lon"));
+      var lat = parseFloat($(this).attr("lat"));
+
+      var hs = new PanoHotspot({ id:id, position:[x,y,z], lon:lon, lat:lat });
+      if (link) { hs.link = link; }
+      if (title) { hs.title = title; }
+      panoScene.hotspots.push(hs);
+
+    });
+
+    panoScenes.push(panoScene);
+
+  });
+
+  init();
+
+}
+
+
 
 
 
