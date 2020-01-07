@@ -54,10 +54,32 @@ function Dummy (args) {
 
 
   this.update = function () {
+
+    // is it being dragged?
+    if (this.active) {
+      var p = this.getPosition();
+      this.position = [p.x, p.y, p.z];
+    }
+
     this.positionMe();
+
   }
 
 
+  // turns lat and lon into X,Y,Z in 3D space
+  this.getPosition = function () {
+
+    var p = {};
+    var hL = Math.cos(THREE.Math.degToRad(this.lat)) * this.distanceFromOrigin; //pano.length;
+    p.x = -Math.sin(THREE.Math.degToRad(this.lon)) * hL;
+    p.y = Math.sin(THREE.Math.degToRad(this.lat)) * this.distanceFromOrigin; //pano.length;
+    p.z = Math.cos(THREE.Math.degToRad(this.lon)) * hL;
+    return p;
+
+  }
+
+
+  // called by eventMove
   this.updatePosition = function () {
 
     var dx = mouse.x - dummy.clickedX;
@@ -70,6 +92,7 @@ function Dummy (args) {
   }
 
 
+  // positions the html element on the screen
   this.positionMe = function () {
 
     var pos = pano.toScreenPosition(this.position, camera);
@@ -88,9 +111,12 @@ function Dummy (args) {
 
 
   this.reset = function () {
-    this.position = [0, 0, this.distanceFromOrigin];
-    this.lat = 0;
-    this.lon = 0;
+
+    this.lon = 180 - pano.lon;
+    this.lat = -pano.lat;
+    var p = this.getPosition();
+    this.position = [p.x, p.y, p.z];
+
   }
 
 

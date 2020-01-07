@@ -49,6 +49,18 @@ function Pano (args) {
 
 
 
+  this.updatePosition = function () {
+
+    var dx = mouse.x - this.clickedX;
+    this.lon = this.clickedLon + (dx * this.speedMultiplier);
+
+    var dy = this.clickedY - mouse.y;
+    this.lat = pano.clickedLat + (dy * this.speedMultiplier);
+    this.lat = Math.max(Math.min(this.lat, this.latMax), -this.latMax);
+
+  }
+
+
   this.toScreenPosition = function (myPos, cam) {
 
     var pos = new THREE.Vector3(myPos[0], myPos[1], myPos[2]);

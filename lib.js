@@ -26,12 +26,6 @@ function animate ()
   window.requestAnimationFrame(animate);
 
   checkControls();
-
-  if (dummy.active) {
-    var p = getDummyPosition();
-    dummy.position = [p.x, p.y, p.z];
-  }
-
   positionCamera();
 
   renderer.render(scene, camera);
@@ -194,41 +188,6 @@ function resizeMe ()
 
 
 
-function getDummyPosition ()
-{
-
-  var p = {};
-
-  var hL = Math.cos(THREE.Math.degToRad(dummy.lat)) * pano.length;
-
-  p.x = -Math.sin(THREE.Math.degToRad(dummy.lon)) * hL;
-  p.y = Math.sin(THREE.Math.degToRad(dummy.lat)) * pano.length;
-  p.z = Math.cos(THREE.Math.degToRad(dummy.lon)) * hL;
-
-  return p;
-
-}
-
-
-
-
-function getTargetPositionWORKING ()
-{
-
-  var p = {};
-
-  var hL = Math.cos(THREE.Math.degToRad(pano.lat)) * pano.length;
-
-  p.x = Math.sin(THREE.Math.degToRad(pano.lon)) * hL;
-  p.y = -Math.sin(THREE.Math.degToRad(pano.lat)) * pano.length;
-  p.z = Math.cos(THREE.Math.degToRad(pano.lon)) * hL;
-
-  return p;
-
-}
-
-
-
 
 function panoClicked (e)
 {
@@ -270,34 +229,8 @@ function eventMove (e)
     mouse.y = e.clientY || e.touches[0].clientY;
   } catch (err) {}
 
-  if (pano.active) {
-
-    var dx = mouse.x - pano.clickedX;
-    pano.lon = pano.clickedLon + (dx * pano.speedMultiplier);
-
-    var dy = pano.clickedY - mouse.y;
-    pano.lat = pano.clickedLat + (dy * pano.speedMultiplier);
-    pano.lat = Math.max(Math.min(pano.lat, pano.latMax), -pano.latMax);
-
-  }
-
-
-  if (dummy.active) {
-
-    /*
-    var dx = mouse.x - dummy.clickedX;
-    dummy.lon = dummy.clickedLon + (dx * pano.speedMultiplier);
-
-    var dy = dummy.clickedY - mouse.y;
-    dummy.lat = dummy.clickedLat + (dy * pano.speedMultiplier);
-    dummy.lat = Math.max(Math.min(dummy.lat, dummy.latMax), -dummy.latMax);
-    */
-
-    dummy.updatePosition();
-
-  }
-
-
+  if (pano.active) { pano.updatePosition(); }
+  if (dummy.active) { dummy.updatePosition(); }
 
 }
 
