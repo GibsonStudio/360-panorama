@@ -1,13 +1,12 @@
 
 
-//TODO: make scenes data in xml format
 
 
-
+var popup;
 
 // config vars
 var dummy = (typeof dummy === 'undefined') ? {} : dummy;
-var enableDummy = (typeof enableDummy === 'undefined') ? false : enableDummy;
+var debugMode = (typeof debugMode === 'undefined') ? false : debugMode;
 var resizeCanvas = true;
 var WIDTH = 800; // these display sizes are used if resizeCanvas = false;
 var HEIGHT = 600; // size for Storyline, 980 x 524
@@ -18,9 +17,8 @@ mouse.x = 0;
 mouse.y = 0;
 
 var container, camera, scene, renderer, mesh;
-var panoMesh, panoMaterial;
-var pano = new Pano();
-var panoScenes = [];
+var pano = new Pano(); // global ref must me called pano
+
 
 
 
@@ -70,7 +68,7 @@ function parseXML (data)
 
     });
 
-    panoScenes.push(panoScene);
+    pano.scenes.push(panoScene);
 
   });
 
@@ -93,7 +91,7 @@ function animate ()
   renderer.render(scene, camera);
 
   positionOverlays();
-  if (enableDummy) { dummy.update(); }
+  if (debugMode) { dummy.update(); }
 
 }
 
@@ -137,13 +135,13 @@ function init ()
   geometry.scale(-1, 1, 1);
 
   var texture = new THREE.Texture();
-  panoMaterial = new THREE.MeshBasicMaterial({ map:texture });
-  panoMesh = new THREE.Mesh( geometry, panoMaterial );
-  panoMesh.rotation.y = THREE.Math.degToRad(90); // so it starts in the center
+  pano.material = new THREE.MeshBasicMaterial({ map:texture });
+  pano.mesh = new THREE.Mesh( geometry, pano.material );
+  pano.mesh.rotation.y = THREE.Math.degToRad(90); // so it starts in the center
 
-  scene.add(panoMesh);
+  scene.add(pano.mesh);
 
-  if (enableDummy) { dummy.add(); }
+  if (debugMode) { dummy.add(); }
 
   // window resize event
   if (resizeCanvas) { window.addEventListener('resize', function (e) { resizeMe(); }); }
@@ -161,7 +159,7 @@ function init ()
   canvasEl.addEventListener('touchmove', eventMove);
   canvasEl.addEventListener('touchend', eventStop);
 
-  panoScenes[0].load();
+  pano.scenes[0].load();
 
   animate();
 
@@ -284,7 +282,7 @@ function panoClicked (e)
 function eventMove (e)
 {
 
-  e.preventDefault();
+  //e.preventDefault(); // this was stopping the selecting of text in a popup
 
   try {
     mouse.x = e.clientX || e.touches[0].clientX;

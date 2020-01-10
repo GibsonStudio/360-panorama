@@ -1,6 +1,14 @@
 
 
 
+//TODO: in debug mode, press A to add new hotspot add to array
+//TODO: in debug mode, click hotspot to display dialog, CLOSE, DELETE, GOTO SCENE
+//TODO: make hotspots draggable in debugMode
+
+// DONE
+// make write XML from array function
+
+
 function Pano (args) {
 
   var args = args || {};
@@ -23,6 +31,9 @@ function Pano (args) {
   this.fovIni = args.fovIni || 75;
   this.loadedScene = args.loadedScene || '';
   this.activeControl = false;
+  this.scenes = [];
+  this.mesh = false;
+  this.material = false;
 
 
   this.load = function (panoSceneID, args) {
@@ -38,9 +49,9 @@ function Pano (args) {
 
   this.getSceneById = function (sceneID) {
 
-    for (var i = 0; i < panoScenes.length; i++) {
-      var p = panoScenes[i];
-      if (p.id == sceneID) { return panoScenes[i]; }
+    for (var i = 0; i < this.scenes.length; i++) {
+      var p = this.scenes[i];
+      if (p.id == sceneID) { return this.scenes[i]; }
     }
 
     return {};
@@ -114,7 +125,7 @@ function PanoScene (args) {
 
     this.loader = new THREE.TextureLoader().load('img\\' + this.texture, function (texture) {
       myThis.tx = texture;
-      panoMaterial.map = myThis.tx;
+      pano.material.map = myThis.tx;
       myThis.ini({ clickedHotspot:clickedHotspot });
       $("#loading-message").hide();
     });
@@ -143,7 +154,7 @@ function PanoScene (args) {
     if (!this.tx) {
       this.loadTexture({ clickedHotspot:clickedHotspot });
     } else {
-      panoMaterial.map = this.tx;
+      pano.material.map = this.tx;
       this.ini({ clickedHotspot:clickedHotspot });
     }
 
@@ -191,7 +202,7 @@ function PanoScene (args) {
 function PanoHotspot (args) {
 
   var args = args || {};
-  this.id = args.id || 'hotspot-' + Math.random();
+  this.id = args.id || 'hotspot-' + Math.round(Math.random() * 100000);
   this.link = args.link || this.id;
 
   this.img = args.img || 'hotspot-red.png';

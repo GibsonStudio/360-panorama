@@ -1,6 +1,18 @@
 
 var dummy = new Dummy();
-var enableDummy = (typeof enableDummy === 'undefined') ? false : enableDummy;
+var debugMode = (typeof debugMode === 'undefined') ? false : debugMode;
+var dummyPopup = new Popup({ title:"Hotspot Data" });
+dummyPopup.addField({ label:"XML:", type:"textarea", id:"dummyInfo" });
+dummyPopup.addButton({ text:"Add", callback:"addHotspot" });
+dummyPopup.addButton({ type:"cancel", text:"Close" });
+
+
+function addHotspot (args)
+{
+  console.dir(args);
+}
+
+
 
 
 function Dummy (args) {
@@ -22,13 +34,13 @@ function Dummy (args) {
 
   this.position = args.position || [0, 0, this.distanceFromOrigin];
 
-  if (enableDummy) {
+  if (debugMode) {
     window.addEventListener('keydown', function (e) { dummy.keyDown(e); });
   }
 
 
   this.add = function () {
-    $("#dummy-container").html('<div id="dummy" onmousedown="dummy.mouseDownMe(event);"></div>');
+    $("#dummy-container").html('<div id="dummy" onmouseup="dummy.mouseUpMe(event);" onmousedown="dummy.mouseDownMe(event);"></div>');
   }
 
 
@@ -44,11 +56,33 @@ function Dummy (args) {
       console.log("Event ERROR");
     }
 
+    /*
     dummy.clickedX = mouse.x;
     dummy.clickedY = mouse.y;
 
     dummy.clickedLon = dummy.lon;
     dummy.clickedLat = dummy.lat;
+    */
+
+    this.clickedX = mouse.x;
+    this.clickedY = mouse.y;
+
+    this.clickedLon = this.lon;
+    this.clickedLat = this.lat;
+
+  }
+
+
+  this.mouseUpMe = function (e) {
+
+    try {
+      mouse.x = e.clientX || e.touches[0].clientX;
+      mouse.y = e.clientY || e.touches[0].clientY;
+    } catch (err) {
+      console.log("Event ERROR");
+    }
+
+    if (mouse.x == this.clickedX && mouse.y == this.clickedY) { this.outputHotspotInfo(); }
 
   }
 
@@ -108,6 +142,7 @@ function Dummy (args) {
     if (e.code == 'KeyR') { this.reset(); }
     if (e.code == 'KeyH') { this.outputHotspotInfo(); }
     if (e.code == 'KeyP') { this.outputPanoInfo(); }
+    if (e.code == "KeyX") { this.createXML(); }
   }
 
 
@@ -136,7 +171,8 @@ function Dummy (args) {
      info += 'z="' + p[2] + '" ';
      info += '></hotspot>';
 
-     console.log(info);
+     dummyPopup.setFieldValue("dummyInfo", info);
+     dummyPopup.show();
 
   }
 
@@ -147,6 +183,53 @@ function Dummy (args) {
     var info = 'lon="' + pano.lon + '" ';
     info += 'lat="' + pano.lat + '"';
     console.log(info);
+
+  }
+
+
+  this.createXML = function () {
+
+    var xml = '<?xml version="1.0" encoding="utf-8" ?>' + "\n\n";
+    xml += '<scenes>' + "\n\n";
+
+    for (var i = 0; i < panoScenes.length; i++) {
+
+      var s = panoScenes[i];
+      var sceneTag = '<scene id="' + s.id + '" image="' + s.texture + '" lon="' + s.lon + '" lat="' + s.lat + '">';
+      xml += "\t" + sceneTag + "\n";
+
+      for (var j = 0; j < panoScenes[i].hotspots.length; j++) {
+
+         var h = panoScenes[i].hotspots[j];
+         xml += "\t\t";
+         xml += '<hotspot id="' + h.id + '" ';
+         xml += 'x="' + h.position[0] + '" ';
+         xml += 'y="' + h.position[1] + '" ';
+         xml += 'z="' + h.position[2] + '" ';
+         if (h.title) { xml += 'title="'+ h.title + '" '; }
+         if (h.link && h.link != h.id) { xml += 'link="'+ h.link + '" '; }
+         if (h.lat) { xml += 'lat="'+ h.lat + '" '; }
+         if (h.lon) { xml += 'lon="'+ h.lon + '" '; }
+         xml += '></hotspot>';
+         xml += "\n";
+
+      }
+
+      xml += "\t</scene>\n\n";
+
+    }
+
+    xml += "</scenes>";
+
+    console.log(xml);
+
+  }
+
+
+
+  this.addHotspot = function (args) {
+
+    console.log("ADD");
 
   }
 
