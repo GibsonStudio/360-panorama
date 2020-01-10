@@ -20,7 +20,7 @@ function Dummy (args) {
   var args = args || {};
   this.active = false;
   this.speedFactor = args.speedFactor || 0.5;
-  this.distanceFromOrigin = args.distanceFromOrigin || 430;
+  this.distanceFromOrigin = args.distanceFromOrigin || 500;
 
   this.lat = args.lat || 0;
   this.lon = args.lon || 0;
@@ -39,6 +39,7 @@ function Dummy (args) {
   }
 
 
+  //TODO: change this to use createElement and appendChild
   this.add = function () {
     $("#dummy-container").html('<div id="dummy" onmouseup="dummy.mouseUpMe(event);" onmousedown="dummy.mouseDownMe(event);"></div>');
   }
@@ -55,14 +56,6 @@ function Dummy (args) {
     } catch (err) {
       console.log("Event ERROR");
     }
-
-    /*
-    dummy.clickedX = mouse.x;
-    dummy.clickedY = mouse.y;
-
-    dummy.clickedLon = dummy.lon;
-    dummy.clickedLat = dummy.lat;
-    */
 
     this.clickedX = mouse.x;
     this.clickedY = mouse.y;
@@ -91,7 +84,7 @@ function Dummy (args) {
 
     // is it being dragged?
     if (this.active) {
-      var p = this.getPosition();
+      var p = pano.getPosition(this.lon, this.lat);
       this.position = [p.x, p.y, p.z];
     }
 
@@ -101,6 +94,7 @@ function Dummy (args) {
 
 
   // turns lat and lon into X,Y,Z in 3D space
+  /*
   this.getPosition = function () {
 
     var p = {};
@@ -111,7 +105,7 @@ function Dummy (args) {
     return p;
 
   }
-
+  */
 
   // called by eventMove
   this.updatePosition = function () {
@@ -150,7 +144,7 @@ function Dummy (args) {
 
     this.lon = 180 - pano.lon;
     this.lat = -pano.lat;
-    var p = this.getPosition();
+    var p = pano.getPosition(this.lon, this.lat);
     this.position = [p.x, p.y, p.z];
 
   }
@@ -158,17 +152,19 @@ function Dummy (args) {
 
   this.outputHotspotInfo = function () {
 
-     var p = this.position;
+     //var p = this.position;
 
      // round numbers
-     for (var i = 0; i < 3; i++) {
-       p[i] = p[i].toFixed(1) * 1;
-     }
+     //for (var i = 0; i < 3; i++) {
+    //   p[i] = p[i].toFixed(1) * 1;
+     //}
 
      var info = '<hotspot id="" ';
-     info += 'x="' + p[0] + '" ';
-     info += 'y="' + p[1] + '" ';
-     info += 'z="' + p[2] + '" ';
+     //info += 'x="' + p[0] + '" ';
+     //info += 'y="' + p[1] + '" ';
+     //info += 'z="' + p[2] + '" ';
+     info += 'lon="' + (this.lon).toFixed(2) + '" ';
+     info += 'lat="' + (this.lat).toFixed(2) + '" ';
      info += '></hotspot>';
 
      dummyPopup.setFieldValue("dummyInfo", info);

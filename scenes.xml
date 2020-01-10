@@ -1,13 +1,13 @@
 <scenes>
 
   <scene id="e1" image="e1.jpg" lon="207" lat="3.8">
-    <hotspot id="i2" title="Interior" x="184" y="114.2" z="371.5" lat="11.3" lon="217.7"></hotspot>
-    <hotspot id="i2-2" link="i2" title="TEST" x="335.8" y="104" z="247.6" ></hotspot>
+    <hotspot id="i2" title="interior" lon="-26.40" lat="10.00" ></hotspot>
+    <hotspot id="cockpit" link="i2" lon="-49.20" lat="23.20" sceneLon="220" sceneLat="5.7" ></hotspot>
+    <hotspot id="window" link="i2" lon="14.10" lat="17.60" sceneLon="35.8" sceneLat="8.3" ></hotspot>
   </scene>
 
   <scene id="i2" image="i2.jpg" lon="132" lat="3.5">
-    <hotspot id="e1" x="300.7" y="-169.1" z="-256.8"></hotspot>
-    <hotspot id="demo" x="275.7" y="-163.9" z="-286.5" ></hotspot>
+    <hotspot id="e1" lon="-130.50" lat="-23.90" sceneLon="138,4" sceneLat="-0.5" ></hotspot>
   </scene>
 
 

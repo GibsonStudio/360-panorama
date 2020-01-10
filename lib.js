@@ -55,13 +55,12 @@ function parseXML (data)
       var id = $(this).attr("id");
       var link = $(this).attr("link");
       var title = $(this).attr("title");
-      var x = parseFloat($(this).attr("x"));
-      var y = parseFloat($(this).attr("y"));
-      var z = parseFloat($(this).attr("z"));
       var lon = parseFloat($(this).attr("lon"));
       var lat = parseFloat($(this).attr("lat"));
+      var sceneLon = parseFloat($(this).attr("sceneLon"));
+      var sceneLat = parseFloat($(this).attr("sceneLat"));
 
-      var hs = new PanoHotspot({ id:id, position:[x,y,z], lon:lon, lat:lat });
+      var hs = new PanoHotspot({ id:id, lon:lon, lat:lat, sceneLon:sceneLon, sceneLat:sceneLat });
       if (link) { hs.link = link; }
       if (title) { hs.title = title; }
       panoScene.hotspots.push(hs);
@@ -207,8 +206,28 @@ function ToggleHelp ()
 
 
 
-
 function positionOverlays ()
+{
+
+  if (!pano.loadedScene) { return false; }
+
+  for (var i = 0; i < pano.loadedScene.hotspots.length; i++) {
+
+    var hs = pano.loadedScene.hotspots[i];
+    var hsPosition = pano.getPosition(hs.lon, hs.lat);
+    hsPosition = [hsPosition.x, hsPosition.y, hsPosition.z];
+    var pos = pano.toScreenPosition(hsPosition, camera);
+    var xPos = pos.x - (hs.imgW / 2);
+    var yPos = pos.y - (hs.imgH / 2);
+    $('#overlay-' + hs.id).css({ 'left': xPos + 'px', 'top': yPos + 'px' });
+
+  }
+
+}
+
+
+/*
+function positionOverlaysOLD ()
 {
 
   if (!pano.loadedScene) { return false; }
@@ -224,7 +243,7 @@ function positionOverlays ()
   }
 
 }
-
+*/
 
 
 
@@ -290,6 +309,7 @@ function eventMove (e)
   } catch (err) {}
 
   if (pano.active) { pano.updatePosition(); }
+  if (pano.dragObject) { pano.dragObject.updatePosition(); }
   if (dummy.active) { dummy.updatePosition(); }
 
 }
@@ -305,6 +325,7 @@ function eventStop (e)
   dummy.active = false;
   var clickTolerance = 2;
   pano.active = false;
+  pano.dragObject = false;
 
   if ((Math.abs(pano.clickedX - mouse.x) <= clickTolerance) && (Math.abs(pano.clickedY - mouse.y) <= clickTolerance)) {
     eventClick(e);
