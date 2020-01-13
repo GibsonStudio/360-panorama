@@ -1,6 +1,7 @@
 
 
 
+//TODO: if in debug mode, clicking a hotspot opens a menu, GOTO, SetID, SetLINK
 //TODO: in debug mode, press A to add new hotspot add to array
 //TODO: in debug mode, click hotspot to display dialog, CLOSE, DELETE, GOTO SCENE
 //TODO: make hotspots draggable in debugMode
@@ -34,7 +35,7 @@ function Pano (args) {
   this.fovMin = args.fovMin || 35;
   this.fovMax = args.fovMax || 90;
   this.fovIni = args.fovIni || 75;
-  this.loadedScene = args.loadedScene || '';
+  this.loadedScene = args.loadedScene || false;
   this.activeControl = false;
   this.scenes = [];
   this.mesh = false;
@@ -184,7 +185,6 @@ function PanoScene (args) {
 
     var args = args || {};
     var clickedHotspot = args.clickedHotspot || {};
-    console.log(clickedHotspot);
 
     // move to default position
     pano.lat = this.lat;
@@ -235,33 +235,18 @@ function PanoHotspot (args) {
   this.sceneLon = args.sceneLon || 0;
   this.sceneLat = args.sceneLat || 0;
 
-  //this.active = false;
-  //this.clickedX = args.clickedX || 0;
-  //this.clickedY = args.clickedY || 0;
-  //this.clickedLon = args.clickedLon || 0;
-  //this.clickedLat = args.clickedLat || 0;
-  //this.latMax = args.latMax || 85;
-  //this.speedMultiplier = 0.1;
+  this.beingDragged = false;
+  this.distanceFromOrigin = args.distanceFromOrigin || 500;
 
-  //this.distanceFromOrigin = args.distanceFromOrigin || 500;
+  this.clickedX = args.clickedX || 0;
+  this.clickedY = args.clickedY || 0;
+  this.clickedLon = args.clickedLon || 0;
+  this.clickedLat = args.clickedLat || 0;
+  this.latMax = args.latMax || 85;
+  this.speedMultiplier = 0.1;
 
-  //this.position = args.position || [0,0, this.distanceFromOrigin];
-
-
-  //TODO dummy vars need moving to hotspot
-  /*
-  this.updatePosition = function () {
-
-    var dx = mouse.x - this.clickedX;
-    this.lon = this.clickedLon + (dx * this.speedMultiplier);
-
-    var dy = this.clickedY - mouse.y;
-    this.lat = this.clickedLat + (dy * this.speedMultiplier);
-    this.lat = Math.max(Math.min(this.lat, this.latMax), -this.latMax);
-
-  }
-  */
-
+  var p = pano.getPosition(this.lon, this.lat);
+  this.position = [p.x, p.y, p.z];
 
   this.addToOverlays = function () {
 
@@ -275,29 +260,37 @@ function PanoHotspot (args) {
     el.style = s;
     if (this.title) { el.title = this.title; }
     var myThis = this;
-    //el.onclick = function () { myThis.clicked(); };
-    //el.onmouseup = function () { myThis.mouseUp(); }
-    el.onmousedown = function (event) { myThis.mouseDown(event); }
+    el.onmouseup = function (event) { myThis.mouseUpMe(event); }
+    el.onmousedown = function (event) { myThis.mouseDownMe(event); }
     document.getElementById("my-overlays").appendChild(el);
 
   }
 
 
-  this.clicked = function () {
-    //pano.load(this.link, { clickedHotspot:this });
-    console.dir("WHAT");
-    pano.dragObject = this;
+
+
+  this.mouseUpMe = function (e) {
+
+    this.beingDragged = false;
+
+    try {
+      mouse.x = e.clientX || e.touches[0].clientX;
+      mouse.y = e.clientY || e.touches[0].clientY;
+    } catch (err) {
+      console.log("Event ERROR");
+    }
+
+    if (mouse.x == this.clickedX && mouse.y == this.clickedY) {
+      pano.load(this.link, { clickedHotspot:this });
+    }
+
   }
 
 
-  this.mouseDown = function (e) {
 
-    pano.load(this.link, { clickedHotspot:this });
+  this.mouseDownMe = function (e) {
 
-    /*
-    console.dir(this);
-    pano.dragObject = this;
-    this.active = true;
+    e.preventDefault();
 
     try {
       mouse.x = e.clientX || e.touches[0].clientX;
@@ -311,14 +304,51 @@ function PanoHotspot (args) {
 
     this.clickedLon = this.lon;
     this.clickedLat = this.lat;
-    */
+
+    this.beingDragged = true;
 
   }
 
 
-  this.mouseUp = function () {
-    console.log("UP");
+  // called by requestAnimationFrame in lib.js
+  this.animate = function () {
+
+    // is it being dragged?
+    if (this.beingDragged) {
+      var p = pano.getPosition(this.lon, this.lat);
+      this.position = [p.x, p.y, p.z];
+    }
+
+    this.positionMyElement();
+
   }
+
+
+
+  // positions the html element on the screen
+  this.positionMyElement = function () {
+
+    var pos = pano.toScreenPosition(this.position, camera);
+    var xPos = pos.x - (50 / 2);
+    var yPos = pos.y - (50 / 2);
+    $('#overlay-' + this.id).css({ 'left': xPos + 'px', 'top': yPos + 'px' });
+
+  }
+
+
+  // called by eventMove in lib.js
+  this.eventMove = function () {
+
+    var dx = mouse.x - this.clickedX;
+    this.lon = this.clickedLon + (dx * this.speedMultiplier);
+
+    var dy = this.clickedY - mouse.y;
+    this.lat = this.clickedLat + (dy * this.speedMultiplier);
+    this.lat = Math.max(Math.min(this.lat, this.latMax), -this.latMax);
+
+  }
+
+
 
 
 

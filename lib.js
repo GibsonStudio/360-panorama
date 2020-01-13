@@ -90,7 +90,7 @@ function animate ()
   renderer.render(scene, camera);
 
   positionOverlays();
-  if (debugMode) { dummy.update(); }
+  if (debugMode) { dummy.animate(); }
 
 }
 
@@ -214,36 +214,22 @@ function positionOverlays ()
   for (var i = 0; i < pano.loadedScene.hotspots.length; i++) {
 
     var hs = pano.loadedScene.hotspots[i];
+    //hs.positionMyElement();
+    hs.animate();
+
+    /*
     var hsPosition = pano.getPosition(hs.lon, hs.lat);
     hsPosition = [hsPosition.x, hsPosition.y, hsPosition.z];
     var pos = pano.toScreenPosition(hsPosition, camera);
     var xPos = pos.x - (hs.imgW / 2);
     var yPos = pos.y - (hs.imgH / 2);
     $('#overlay-' + hs.id).css({ 'left': xPos + 'px', 'top': yPos + 'px' });
+    */
 
   }
 
 }
 
-
-/*
-function positionOverlaysOLD ()
-{
-
-  if (!pano.loadedScene) { return false; }
-
-  for (var i = 0; i < pano.loadedScene.hotspots.length; i++) {
-
-    var hs = pano.loadedScene.hotspots[i];
-    var pos = pano.toScreenPosition(hs.position, camera);
-    var xPos = pos.x - (hs.imgW / 2);
-    var yPos = pos.y - (hs.imgH / 2);
-    $('#overlay-' + hs.id).css({ 'left': xPos + 'px', 'top': yPos + 'px' });
-
-  }
-
-}
-*/
 
 
 
@@ -308,9 +294,17 @@ function eventMove (e)
     mouse.y = e.clientY || e.touches[0].clientY;
   } catch (err) {}
 
+  if (!pano.loadedScene) { return false; }
+
   if (pano.active) { pano.updatePosition(); }
-  if (pano.dragObject) { pano.dragObject.updatePosition(); }
-  if (dummy.active) { dummy.updatePosition(); }
+
+  for (var i = 0; i < pano.loadedScene.hotspots.length; i++) {
+    if (pano.loadedScene.hotspots[i].beingDragged) {
+      pano.loadedScene.hotspots[i].eventMove();
+    }
+  }
+
+  if (dummy.beingDragged) { dummy.eventMove(); }
 
 }
 
@@ -320,12 +314,14 @@ function eventStop (e)
 {
 
   e.preventDefault();
-
   pano.activeControl = false;
-  dummy.active = false;
+  dummy.beingDragged = false;
   var clickTolerance = 2;
   pano.active = false;
-  pano.dragObject = false;
+
+  for (var i = 0; i < pano.loadedScene.hotspots.length; i++) {
+    pano.loadedScene.hotspots[i].beingDragged = false;
+  }
 
   if ((Math.abs(pano.clickedX - mouse.x) <= clickTolerance) && (Math.abs(pano.clickedY - mouse.y) <= clickTolerance)) {
     eventClick(e);

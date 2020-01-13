@@ -1,4 +1,8 @@
 
+
+//TODO: eventMove - change dummy to this
+
+
 var dummy = new Dummy();
 var debugMode = (typeof debugMode === 'undefined') ? false : debugMode;
 var dummyPopup = new Popup({ title:"Hotspot Data" });
@@ -18,8 +22,7 @@ function addHotspot (args)
 function Dummy (args) {
 
   var args = args || {};
-  this.active = false;
-  this.speedFactor = args.speedFactor || 0.5;
+  this.beingDragged = false;
   this.distanceFromOrigin = args.distanceFromOrigin || 500;
 
   this.lat = args.lat || 0;
@@ -39,16 +42,25 @@ function Dummy (args) {
   }
 
 
-  //TODO: change this to use createElement and appendChild
+
+
   this.add = function () {
-    $("#dummy-container").html('<div id="dummy" onmouseup="dummy.mouseUpMe(event);" onmousedown="dummy.mouseDownMe(event);"></div>');
+
+    var myThis = this;
+
+    var d = document.createElement("div");
+    d.id = "dummy";
+    d.onmouseup = function (event) { myThis.mouseUpMe(event); }
+    d.onmousedown = function (event) { myThis.mouseDownMe(event); }
+    document.getElementById("dummy-container").appendChild(d);
+
   }
 
 
 
   this.mouseDownMe = function (e) {
 
-    this.active = true;
+    e.preventDefault();
 
     try {
       mouse.x = e.clientX || e.touches[0].clientX;
@@ -63,10 +75,14 @@ function Dummy (args) {
     this.clickedLon = this.lon;
     this.clickedLat = this.lat;
 
+    this.beingDragged = true;
+
   }
 
 
   this.mouseUpMe = function (e) {
+
+    this.beingDragged = false;
 
     try {
       mouse.x = e.clientX || e.touches[0].clientX;
@@ -80,35 +96,22 @@ function Dummy (args) {
   }
 
 
-  this.update = function () {
+  // called by requestAnimationFrame in lib.js
+  this.animate = function () {
 
     // is it being dragged?
-    if (this.active) {
+    if (this.beingDragged) {
       var p = pano.getPosition(this.lon, this.lat);
       this.position = [p.x, p.y, p.z];
     }
 
-    this.positionMe();
+    this.positionMyElement();
 
   }
 
 
-  // turns lat and lon into X,Y,Z in 3D space
-  /*
-  this.getPosition = function () {
-
-    var p = {};
-    var hL = Math.cos(THREE.Math.degToRad(this.lat)) * this.distanceFromOrigin; //pano.length;
-    p.x = -Math.sin(THREE.Math.degToRad(this.lon)) * hL;
-    p.y = Math.sin(THREE.Math.degToRad(this.lat)) * this.distanceFromOrigin; //pano.length;
-    p.z = Math.cos(THREE.Math.degToRad(this.lon)) * hL;
-    return p;
-
-  }
-  */
-
-  // called by eventMove
-  this.updatePosition = function () {
+  // called by eventMove in lib.js
+  this.eventMove = function () {
 
     var dx = mouse.x - dummy.clickedX;
     dummy.lon = dummy.clickedLon + (dx * dummy.speedMultiplier);
@@ -121,7 +124,7 @@ function Dummy (args) {
 
 
   // positions the html element on the screen
-  this.positionMe = function () {
+  this.positionMyElement = function () {
 
     var pos = pano.toScreenPosition(this.position, camera);
     var xPos = pos.x - (50 / 2);
@@ -152,17 +155,7 @@ function Dummy (args) {
 
   this.outputHotspotInfo = function () {
 
-     //var p = this.position;
-
-     // round numbers
-     //for (var i = 0; i < 3; i++) {
-    //   p[i] = p[i].toFixed(1) * 1;
-     //}
-
      var info = '<hotspot id="" ';
-     //info += 'x="' + p[0] + '" ';
-     //info += 'y="' + p[1] + '" ';
-     //info += 'z="' + p[2] + '" ';
      info += 'lon="' + (this.lon).toFixed(2) + '" ';
      info += 'lat="' + (this.lat).toFixed(2) + '" ';
      info += '></hotspot>';
@@ -188,24 +181,23 @@ function Dummy (args) {
     var xml = '<?xml version="1.0" encoding="utf-8" ?>' + "\n\n";
     xml += '<scenes>' + "\n\n";
 
-    for (var i = 0; i < panoScenes.length; i++) {
+    for (var i = 0; i < pano.scenes.length; i++) {
 
-      var s = panoScenes[i];
+      var s = pano.scenes[i];
       var sceneTag = '<scene id="' + s.id + '" image="' + s.texture + '" lon="' + s.lon + '" lat="' + s.lat + '">';
       xml += "\t" + sceneTag + "\n";
 
-      for (var j = 0; j < panoScenes[i].hotspots.length; j++) {
+      for (var j = 0; j < pano.scenes[i].hotspots.length; j++) {
 
-         var h = panoScenes[i].hotspots[j];
+         var h = pano.scenes[i].hotspots[j];
          xml += "\t\t";
          xml += '<hotspot id="' + h.id + '" ';
-         xml += 'x="' + h.position[0] + '" ';
-         xml += 'y="' + h.position[1] + '" ';
-         xml += 'z="' + h.position[2] + '" ';
+         xml += 'lon="' + (h.lon).toFixed(2) + '" ';
+         xml += 'lat="' + (h.lat).toFixed(2) + '" ';
          if (h.title) { xml += 'title="'+ h.title + '" '; }
          if (h.link && h.link != h.id) { xml += 'link="'+ h.link + '" '; }
-         if (h.lat) { xml += 'lat="'+ h.lat + '" '; }
-         if (h.lon) { xml += 'lon="'+ h.lon + '" '; }
+         if (h.sceneLat) { xml += 'sceneLat="'+ h.sceneLat + '" '; }
+         if (h.sceneLon) { xml += 'sceneLon="'+ h.sceneLon + '" '; }
          xml += '></hotspot>';
          xml += "\n";
 
