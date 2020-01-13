@@ -1,18 +1,9 @@
 
 
-
-//TODO: if in debug mode, clicking a hotspot opens a menu, GOTO, SetID, SetLINK
-//TODO: in debug mode, press A to add new hotspot add to array
-//TODO: in debug mode, click hotspot to display dialog, CLOSE, DELETE, GOTO SCENE
-//TODO: make hotspots draggable in debugMode
-//TODO: rewrite code so hotspot.lat and hotspot.lon define position
-//      same for dummy
-
-//TODO: hotspot lon and lat need changing - used to be used to set start position of scene, rename to sceneLon, sceneLat?
+//TODO: Add debug html elements, have buttons and remove keyboard shortcuts,
+//TODO: include list of scenes, click on to navigate to
 
 
-// DONE
-// make write XML from array function
 
 
 function Pano (args) {
@@ -40,7 +31,7 @@ function Pano (args) {
   this.scenes = [];
   this.mesh = false;
   this.material = false;
-  this.dragObject = false; // ref to the currently dragged hotspot
+  this.clickedHotspot = false;
 
 
   this.load = function (panoSceneID, args) {
@@ -215,6 +206,20 @@ function PanoScene (args) {
 
 
 
+  this.addHotspot = function (args, addToOverlays) {
+
+    var args = args || {};
+    var addToOverlays = addToOverlays || false;
+    var hs = new PanoHotspot(args);
+
+    this.hotspots.push(hs);
+
+    if (addToOverlays) { hs.addToOverlays(); }
+
+  }
+
+
+
 }
 
 
@@ -260,12 +265,23 @@ function PanoHotspot (args) {
     el.style = s;
     if (this.title) { el.title = this.title; }
     var myThis = this;
-    el.onmouseup = function (event) { myThis.mouseUpMe(event); }
-    el.onmousedown = function (event) { myThis.mouseDownMe(event); }
+
+    if (debugMode) {
+      el.onmouseup = function (event) { myThis.mouseUpMe(event); }
+      el.onmousedown = function (event) { myThis.mouseDownMe(event); }
+    } else {
+      el.onmousedown = function (event) { myThis.clicked(event); }
+    }
+
     document.getElementById("my-overlays").appendChild(el);
 
   }
 
+
+
+  this.clicked = function () {
+    pano.load(this.link, { clickedHotspot:this });
+  }
 
 
 
@@ -281,7 +297,22 @@ function PanoHotspot (args) {
     }
 
     if (mouse.x == this.clickedX && mouse.y == this.clickedY) {
-      pano.load(this.link, { clickedHotspot:this });
+
+      if (debugMode) {
+
+        pano.clickedHotspot = this;
+        var hp = new Popup({ id:"hotspot-options", title:"Hotspot Options:" });
+        hp.addField({ label:"ID", id:"id", value:this.id });
+        hp.addField({ label:"Link", id:"link", value:this.link });
+        hp.addButton({ text:"Navigate To", callback:"panoHotspotClicked" });
+        hp.addButton({ text:"Update", callback:"panoHotspotUpdate" });
+        hp.addButton({type:"cancel" });
+        hp.show();
+
+      } else {
+        pano.load(this.link, { clickedHotspot:this });
+      }
+
     }
 
   }
@@ -289,6 +320,8 @@ function PanoHotspot (args) {
 
 
   this.mouseDownMe = function (e) {
+
+    if (!debugMode) { return false; }
 
     e.preventDefault();
 
@@ -353,3 +386,34 @@ function PanoHotspot (args) {
 
 
 }
+
+
+
+
+
+function panoHotspotClicked () {
+  pano.clickedHotspot.clicked();
+}
+
+
+
+function panoHotspotUpdate (args) {
+
+  var id = "";
+  var link = "";
+
+  for (var i = 0; i < args.length; i++) {
+    if (args[i].id == "id") { id = args[i].value; }
+    if (args[i].id == "link") { link = args[i].value; }
+  }
+
+  pano.clickedHotspot.id = id;
+  pano.clickedHotspot.link = link;
+
+}
+
+
+
+
+
+//

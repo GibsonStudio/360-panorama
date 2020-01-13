@@ -36,7 +36,47 @@ function loadXML ()
 
 
 
+
 function parseXML (data)
+{
+
+  console.log("XML loaded, parsing....");
+
+  $(data).find("scene").each(function () {
+
+    var id = $(this).attr("id");
+    var img = $(this).attr("image");
+    var lon = parseFloat($(this).attr("lon"));
+    var lat = parseFloat($(this).attr("lat"));
+
+    var panoScene = new PanoScene({ id:id, texture:img, lon:lon, lat:lat });
+
+    $(this).find("hotspot").each(function () {
+
+      var args = {};
+      args.id = $(this).attr("id");
+      args.link = $(this).attr("link");
+      args.title = $(this).attr("title");
+      args.lon = parseFloat($(this).attr("lon"));
+      args.lat = parseFloat($(this).attr("lat"));
+      args.sceneLon = parseFloat($(this).attr("sceneLon"));
+      args.sceneLat = parseFloat($(this).attr("sceneLat"));
+
+      panoScene.addHotspot(args);
+
+    });
+
+    pano.scenes.push(panoScene);
+
+  });
+
+  init();
+
+}
+
+
+
+function parseXMLOLD (data)
 {
 
   console.log("XML loaded....");

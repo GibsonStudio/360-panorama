@@ -1,11 +1,12 @@
 
 
-//TODO: eventMove - change dummy to this
-
 
 var dummy = new Dummy();
 var debugMode = (typeof debugMode === 'undefined') ? false : debugMode;
 var dummyPopup = new Popup({ title:"Hotspot Data" });
+dummyPopup.addField({ label:"ID", id:"id" });
+dummyPopup.addField({ label:"Link", id:"link" });
+dummyPopup.addField({ label:"Title", id:"title" });
 dummyPopup.addField({ label:"XML:", type:"textarea", id:"dummyInfo" });
 dummyPopup.addButton({ text:"Add", callback:"addHotspot" });
 dummyPopup.addButton({ type:"cancel", text:"Close" });
@@ -13,7 +14,19 @@ dummyPopup.addButton({ type:"cancel", text:"Close" });
 
 function addHotspot (args)
 {
-  console.dir(args);
+
+  var id = "";
+  var link = "";
+  var title = "";
+
+  for (var i = 0; i < args.length; i++) {
+    if (args[i].id == "id") { id = args[i].value; }
+    if (args[i].id == "link") { link = args[i].value; }
+    if (args[i].id == "title") { title = args[i].value; }
+  }
+
+  pano.loadedScene.addHotspot({ id:id, link:link, title:title, lon:dummy.lon, lat:dummy.lat }, true);
+
 }
 
 
@@ -113,12 +126,12 @@ function Dummy (args) {
   // called by eventMove in lib.js
   this.eventMove = function () {
 
-    var dx = mouse.x - dummy.clickedX;
-    dummy.lon = dummy.clickedLon + (dx * dummy.speedMultiplier);
+    var dx = mouse.x - this.clickedX;
+    this.lon = this.clickedLon + (dx * this.speedMultiplier);
 
-    var dy = dummy.clickedY - mouse.y;
-    dummy.lat = dummy.clickedLat + (dy * dummy.speedMultiplier);
-    dummy.lat = Math.max(Math.min(dummy.lat, dummy.latMax), -dummy.latMax);
+    var dy = this.clickedY - mouse.y;
+    this.lat = this.clickedLat + (dy * this.speedMultiplier);
+    this.lat = Math.max(Math.min(this.lat, this.latMax), -this.latMax);
 
   }
 
