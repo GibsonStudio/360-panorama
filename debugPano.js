@@ -31,10 +31,15 @@ function iniDebug () {
   el.style.setProperty("position", "absolute");
   el.style.setProperty("left", "0px");
   el.style.setProperty("top", "50px");
-  el.style.setProperty("width", "40px");
-  el.style.setProperty("height", "40px");
-  el.style.setProperty("background-color", "#f9423a");
+  el.style.setProperty("width", "60px");
+  el.style.setProperty("padding", "8px");
+  el.style.setProperty("background-color", "#005eb8");
+  el.style.setProperty("color", "#ffffff");
+  el.style.setProperty("font-size", "12px");
+  el.style.setProperty("border-top-right-radius", "8px");
+  el.style.setProperty("border-bottom-right-radius", "8px");
   el.style.setProperty("cursor", "pointer");
+  el.innerHTML = "menu";
   el.onclick = function () { debugToggle(); }
 
   dc.appendChild(el);
@@ -50,12 +55,14 @@ function iniDebug () {
   //el.style.setProperty("height", "400px");
   el.style.setProperty("background-color", "#fffff6");
   el.style.setProperty("padding", "10px");
+  el.style.setProperty("border-top-right-radius", "8px");
+  el.style.setProperty("border-bottom-right-radius", "8px");
   el.hidden = false;
 
   var h = "";
 
   h += '<style>';
-  h += '.debugButton { background-color:#005eb8; color:#ffffff; margin:4px 10px; padding:4px; border:none; cursor:pointer; font-size:11px; }';
+  h += '.debugButton { background-color:#d4d4d4; color:#666666; margin:4px 10px; padding:4px; border:none; cursor:pointer; font-size:11px; }';
   h += '</style>';
 
   h += '<div style="font-size:12px; font-weight:bold;">Scenes:</div>';
@@ -65,6 +72,7 @@ function iniDebug () {
   h += '<button class="debugButton" onclick="debugSetScenePosition();">Set Position</button>';
   h += '<button class="debugButton" onclick="debugDeleteCurrentScene();">Delete Current Scene</button>';
   h += '<button class="debugButton" onclick="addHotspotPopup.show();">Add Hotspot</button>';
+  h += '<button class="debugButton" onclick="debugGenerateXML();">Generate XML</button>';
 
   el.innerHTML = h;
 
@@ -200,9 +208,54 @@ function debugAddHotspot (args)
      if (args[i].id == "lat") { if (args[i].value) { myLat = parseFloat(args[i].value); } }
    }
 
+   console.log(myLink);
+
    pano.loadedScene.addHotspot({ id:myID, link:myLink, title:myTitle, lon:myLon, lat:myLat }, true);
 
 }
+
+
+
+
+
+function debugGenerateXML ()
+{
+
+  var xml = '<?xml version="1.0" encoding="utf-8" ?>' + "\n\n";
+  xml += '<scenes>' + "\n\n";
+
+  for (var i = 0; i < pano.scenes.length; i++) {
+
+    var s = pano.scenes[i];
+    var sceneTag = '<scene id="' + s.id + '" image="' + s.texture + '" lon="' + s.lon + '" lat="' + s.lat + '">';
+    xml += "\t" + sceneTag + "\n";
+
+    for (var j = 0; j < pano.scenes[i].hotspots.length; j++) {
+
+       var h = pano.scenes[i].hotspots[j];
+       xml += "\t\t";
+       xml += '<hotspot id="' + h.id + '" ';
+       xml += 'lon="' + (h.lon).toFixed(2) + '" ';
+       xml += 'lat="' + (h.lat).toFixed(2) + '" ';
+       if (h.title) { xml += 'title="'+ h.title + '" '; }
+       if (h.link && h.link != h.id) { xml += 'link="'+ h.link + '" '; }
+       if (h.sceneLat) { xml += 'sceneLat="'+ h.sceneLat + '" '; }
+       if (h.sceneLon) { xml += 'sceneLon="'+ h.sceneLon + '" '; }
+       xml += '></hotspot>';
+       xml += "\n";
+
+    }
+
+    xml += "\t</scene>\n\n";
+
+  }
+
+  xml += "</scenes>";
+
+  console.log(xml);
+
+}
+
 
 
 

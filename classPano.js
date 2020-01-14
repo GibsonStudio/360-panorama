@@ -2,15 +2,16 @@
 
 
 //TODO: remove dummy and just have addHotspot button / function - add at screen center al la dummy reset
-//TODO: Add debug html elements, have buttons and remove keyboard shortcuts,
-//TODO: include list of scenes, click on to navigate to
+//TODO: remove keyboard shortcuts in classDummy
 //TODO: remove need for classDummy.js and add panoDebug.js
 
-//TODO: add scene button to debugElement
 //TODO: debug - edit current scene properties, id, texture, inilon, inilat
 //TODO: add showXML button to hotspot popup
 //TODO: debugElement - add show pano info button
 //TODO: add show scenes XML button to debug element
+//TODO add copy position button, so you can store pano position to use on a hotspot
+
+//TODO: add message element, use setImeout to remove after X seconds
 
 
 

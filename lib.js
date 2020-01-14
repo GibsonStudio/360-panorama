@@ -130,7 +130,7 @@ function animate ()
   renderer.render(scene, camera);
 
   positionOverlays();
-  if (debugMode) { dummy.animate(); }
+  //if (debugMode) { dummy.animate(); }
 
 }
 
@@ -182,7 +182,7 @@ function init ()
 
   scene.add(pano.mesh);
 
-  if (debugMode) { dummy.add(); }
+  //if (debugMode) { dummy.add(); }
 
   // window resize event
   if (resizeCanvas) { window.addEventListener('resize', function (e) { resizeMe(); }); }
