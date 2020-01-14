@@ -182,8 +182,8 @@ function Dummy (args) {
   this.outputPanoInfo = function () {
 
     console.log("id:" + pano.loadedScene.id);
-    var info = 'lon="' + pano.lon + '" ';
-    info += 'lat="' + pano.lat + '"';
+    var info = 'lon="' + pano.lon.toFixed(2) + '" ';
+    info += 'lat="' + pano.lat.toFixed(2) + '"';
     console.log(info);
 
   }

@@ -1,7 +1,16 @@
 
 
+
+//TODO: remove dummy and just have addHotspot button / function - add at screen center al la dummy reset
 //TODO: Add debug html elements, have buttons and remove keyboard shortcuts,
 //TODO: include list of scenes, click on to navigate to
+//TODO: remove need for classDummy.js and add panoDebug.js
+
+//TODO: add scene button to debugElement
+//TODO: debug - edit current scene properties, id, texture, inilon, inilat
+//TODO: add showXML button to hotspot popup
+//TODO: debugElement - add show pano info button
+//TODO: add show scenes XML button to debug element
 
 
 
@@ -279,6 +288,24 @@ function PanoHotspot (args) {
 
 
 
+  this.delete = function () {
+
+    // remove object
+    for (var i = 0; pano.loadedScene.hotspots.length; i++) {
+      if (pano.loadedScene.hotspots[i] == this) {
+        pano.loadedScene.hotspots.splice(i, 1);
+        break;
+      }
+    }
+
+    // remove html element
+    var hel = document.getElementById("overlay-" + this.id);
+    document.getElementById("my-overlays").removeChild(hel);
+
+  }
+
+
+
   this.clicked = function () {
     pano.load(this.link, { clickedHotspot:this });
   }
@@ -304,8 +331,13 @@ function PanoHotspot (args) {
         var hp = new Popup({ id:"hotspot-options", title:"Hotspot Options:" });
         hp.addField({ label:"ID", id:"id", value:this.id });
         hp.addField({ label:"Link", id:"link", value:this.link });
+        hp.addField({ label:"Title", id:"title", value:this.title });
+        hp.addField({ label:"Scene Lon", id:"sceneLon", type:"number", value:this.sceneLon });
+        hp.addField({ label:"Scene Lat", id:"sceneLat", type:"number", value:this.sceneLat });
+
         hp.addButton({ text:"Navigate To", callback:"panoHotspotClicked" });
         hp.addButton({ text:"Update", callback:"panoHotspotUpdate" });
+        hp.addButton({ text:"Delete", callback:"panoHotspotDelete"});
         hp.addButton({type:"cancel" });
         hp.show();
 
@@ -401,15 +433,37 @@ function panoHotspotUpdate (args) {
 
   var id = "";
   var link = "";
+  var title = ";"
+  var sceneLon = 0;
+  var sceneLat = 0;
 
   for (var i = 0; i < args.length; i++) {
     if (args[i].id == "id") { id = args[i].value; }
     if (args[i].id == "link") { link = args[i].value; }
+    if (args[i].id == "title") { title = args[i].value; }
+    if (args[i].id == "sceneLon") { sceneLon = parseFloat(args[i].value); }
+    if (args[i].id == "sceneLat") { sceneLat = parseFloat(args[i].value); }
   }
 
+  var originalID = pano.clickedHotspot.id;
   pano.clickedHotspot.id = id;
   pano.clickedHotspot.link = link;
+  pano.clickedHotspot.title = title;
+  pano.clickedHotspot.sceneLon = sceneLon;
+  pano.clickedHotspot.sceneLat = sceneLat;
 
+  // update html element
+  var el = document.getElementById("overlay-" + originalID);
+  el.id = "overlay-" + id;
+  el.title = title;
+
+}
+
+
+
+function panoHotspotDelete (args)
+{
+  pano.clickedHotspot.delete();
 }
 
 

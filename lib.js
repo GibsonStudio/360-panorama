@@ -75,7 +75,7 @@ function parseXML (data)
 }
 
 
-
+/*
 function parseXMLOLD (data)
 {
 
@@ -114,7 +114,7 @@ function parseXMLOLD (data)
   init();
 
 }
-
+*/
 
 
 
@@ -155,6 +155,8 @@ function init ()
     $('#my-container').width(WIDTH);
     $('#my-container').height(HEIGHT);
   }
+
+  if (debugMode) { iniDebug(); }
 
   container = document.getElementById('my-canvas-container');
 
