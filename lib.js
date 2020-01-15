@@ -5,7 +5,7 @@
 var popup;
 
 // config vars
-var dummy = (typeof dummy === 'undefined') ? {} : dummy;
+//var dummy = (typeof dummy === 'undefined') ? {} : dummy;
 var debugMode = (typeof debugMode === 'undefined') ? false : debugMode;
 var resizeCanvas = true;
 var WIDTH = 800; // these display sizes are used if resizeCanvas = false;
@@ -248,6 +248,61 @@ function ToggleHelp ()
 
 
 
+function toggleFullscreen ()
+{
+
+  if (!document.fullscreenElement && !document.mozFullScreenElement
+    && !document.webkitFullscreenElement && !document.msFullscreenElement ) {
+
+    enterFullscreen();
+
+  } else {
+
+    exitFullscreen();
+
+  }
+
+}
+
+
+
+function enterFullscreen ()
+{
+
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen();
+  } else if (document.documentElement.mozRequestFullScreen) {
+    document.documentElement.mozRequestFullScreen(); // Firefox
+  } else if (document.documentElement.webkitRequestFullscreen) {
+    document.documentElement.webkitRequestFullscreen(); // Chrome and Safari
+  } else if (document.documentElement.msRequestFullscreen) {
+    document.documentElement.msRequestFullscreen(); // IE
+  }
+
+}
+
+
+
+function exitFullscreen ()
+{
+
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
+  } else if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+
+}
+
+
+
+
+
+
 function positionOverlays ()
 {
 
@@ -346,7 +401,7 @@ function eventMove (e)
     }
   }
 
-  if (dummy.beingDragged) { dummy.eventMove(); }
+  //if (dummy.beingDragged) { dummy.eventMove(); }
 
 }
 
@@ -357,7 +412,7 @@ function eventStop (e)
 
   e.preventDefault();
   pano.activeControl = false;
-  dummy.beingDragged = false;
+  //dummy.beingDragged = false;
   var clickTolerance = 2;
   pano.active = false;
 

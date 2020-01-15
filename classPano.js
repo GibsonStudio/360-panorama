@@ -1,17 +1,13 @@
 
 
 
-//TODO: remove dummy and just have addHotspot button / function - add at screen center al la dummy reset
-//TODO: remove keyboard shortcuts in classDummy
-//TODO: remove need for classDummy.js and add panoDebug.js
-
-//TODO: debug - edit current scene properties, id, texture, inilon, inilat
-//TODO: add showXML button to hotspot popup
 //TODO: debugElement - add show pano info button
-//TODO: add show scenes XML button to debug element
 //TODO add copy position button, so you can store pano position to use on a hotspot
 
 //TODO: add message element, use setImeout to remove after X seconds
+
+//TODO: are loading messages showing up, using jQuery?
+
 
 
 
@@ -112,10 +108,6 @@ function Pano (args) {
 
   this.toggleAutorotate = function () {
     this.autoRotate = !this.autoRotate;
-  }
-
-  this.runFullscreen = function () {
-    document.getElementById("my-container").requestFullscreen();
   }
 
 }
@@ -267,12 +259,16 @@ function PanoHotspot (args) {
 
     var el = document.createElement("div");
     el.id = "overlay-" + this.id;
-    var s = 'width:' + this.imgW + 'px; height:' + this.imgH + 'px;';
-    s += 'background-image:url(img-system/' + this.img + ');';
-    s += 'background-size: 100% 100%;';
-    if (this.imgCursor) { s += 'cursor:' + this.imgCursor + ';'; }
-    s += 'position:absolute;left:100px;top:300px;"';
-    el.style = s;
+
+    el.style.setProperty("width", this.imgW + "px");
+    el.style.setProperty("height", this.imgH + "px");
+    el.style.setProperty("background-image", "url(img-system/" + this.img + ")");
+    el.style.setProperty("background-size", "100% 100%");
+    el.style.setProperty("position", "absolute");
+    el.style.setProperty("left", "100px");
+    el.style.setProperty("top", "100px");
+    if (this.imgCursor) { el.style.setProperty("cursor", this.imgCursor); }
+
     if (this.title) { el.title = this.title; }
     var myThis = this;
 
@@ -284,6 +280,22 @@ function PanoHotspot (args) {
     }
 
     document.getElementById("my-overlays").appendChild(el);
+
+  }
+
+
+  this.getXML = function () {
+
+    var xml = '<hotspot id="' + this.id + '" ';
+    xml += 'lon="' + (this.lon).toFixed(2) + '" ';
+    xml += 'lat="' + (this.lat).toFixed(2) + '" ';
+    if (this.title) { xml += 'title="'+ this.title + '" '; }
+    if (this.link && this.link != this.id) { xml += 'link="'+ this.link + '" '; }
+    if (this.sceneLat) { xml += 'sceneLat="'+ this.sceneLat + '" '; }
+    if (this.sceneLon) { xml += 'sceneLon="'+ this.sceneLon + '" '; }
+    xml += '></hotspot>';
+
+    return xml;
 
   }
 
@@ -338,6 +350,7 @@ function PanoHotspot (args) {
 
         hp.addButton({ text:"Navigate To", callback:"panoHotspotClicked" });
         hp.addButton({ text:"Update", callback:"panoHotspotUpdate" });
+        hp.addButton({ text:"Show XML", callback:"panoHotspotShowXML" });
         hp.addButton({ text:"Delete", callback:"panoHotspotDelete"});
         hp.addButton({type:"cancel" });
         hp.show();
@@ -415,57 +428,14 @@ function PanoHotspot (args) {
   }
 
 
-
-
-
 }
 
 
 
 
 
-function panoHotspotClicked () {
-  pano.clickedHotspot.clicked();
-}
 
 
-
-function panoHotspotUpdate (args) {
-
-  var id = "";
-  var link = "";
-  var title = ";"
-  var sceneLon = 0;
-  var sceneLat = 0;
-
-  for (var i = 0; i < args.length; i++) {
-    if (args[i].id == "id") { id = args[i].value; }
-    if (args[i].id == "link") { link = args[i].value; }
-    if (args[i].id == "title") { title = args[i].value; }
-    if (args[i].id == "sceneLon") { sceneLon = parseFloat(args[i].value); }
-    if (args[i].id == "sceneLat") { sceneLat = parseFloat(args[i].value); }
-  }
-
-  var originalID = pano.clickedHotspot.id;
-  pano.clickedHotspot.id = id;
-  pano.clickedHotspot.link = link;
-  pano.clickedHotspot.title = title;
-  pano.clickedHotspot.sceneLon = sceneLon;
-  pano.clickedHotspot.sceneLat = sceneLat;
-
-  // update html element
-  var el = document.getElementById("overlay-" + originalID);
-  el.id = "overlay-" + id;
-  el.title = title;
-
-}
-
-
-
-function panoHotspotDelete (args)
-{
-  pano.clickedHotspot.delete();
-}
 
 
 

@@ -69,10 +69,12 @@ function iniDebug () {
   h += '<div id="debugSceneLinks" style="height:140px; overflow-y:auto; background-color:#fcfcfc; margin-bottom:10px; border:1px solid #666666;"></div>';
 
   h += '<button class="debugButton" onclick="addScenePopup.show();">Add Scene</button>';
+  h += '<button class="debugButton" onclick="editCurrentScene();">Edit Scene</button>';
   h += '<button class="debugButton" onclick="debugSetScenePosition();">Set Position</button>';
   h += '<button class="debugButton" onclick="debugDeleteCurrentScene();">Delete Current Scene</button>';
   h += '<button class="debugButton" onclick="addHotspotPopup.show();">Add Hotspot</button>';
   h += '<button class="debugButton" onclick="debugGenerateXML();">Generate XML</button>';
+  h += '<button class="debugButton" onclick="debugShowPanoInfo();">Pano Info</button>';
 
   el.innerHTML = h;
 
@@ -96,6 +98,22 @@ function debugSetScenePosition ()
   pano.loadedScene.lon = pano.lon;
   pano.loadedScene.lat = pano.lat;
   console.log("OK");
+}
+
+
+
+function debugShowPanoInfo ()
+{
+
+  var data = "ID: " + pano.loadedScene.id + "\n";
+  data +='lon="' + pano.lon.toFixed(2) + '" ';
+  data += 'lat="' + pano.lat.toFixed(2) + '"';
+
+  var panoPopup = new Popup({ title:"Pano Info", width:"400px" });
+  panoPopup.addField({ label:"info", id:"info", type:"textarea", value:data });
+  panoPopup.addButton({ type:"cancel" });
+  panoPopup.show();
+
 }
 
 
@@ -124,6 +142,51 @@ function debugAddSceneLinks ()
 
 }
 
+
+
+
+
+function editCurrentScene ()
+{
+
+  var editScenePopup = new Popup({ title:"Edit Scene" });
+  editScenePopup.addField({ label:"ID", id:"id", value:pano.loadedScene.id });
+  editScenePopup.addField({ label:"Image", id:"texture", value:pano.loadedScene.texture });
+  editScenePopup.addField({ label:"Lon", id:"lon", type:"number", value:pano.loadedScene.lon });
+  editScenePopup.addField({ label:"Lat", id:"lat", type:"number", value:pano.loadedScene.lat });
+  editScenePopup.addButton({ text:"Save", callback:"editScene" });
+  editScenePopup.addButton({ type:"cancel", text:"Cancel" });
+  editScenePopup.show();
+
+}
+
+
+function editScene (args)
+{
+
+  var args = args || {};
+  var myID = pano.loadedScene.id;
+  var myTexture = pano.loadedScene.texture;
+  var myLon = pano.loadedScene.lon;
+  var myLat = pano.loadedScene.lat;
+
+  for (var i = 0; i < args.length; i++) {
+    if (args[i].id == "id") { myID = args[i].value; }
+    if (args[i].id == "texture") { myTexture = args[i].value; }
+    if (args[i].id == "lon") { if (args[i].value) { myLon = parseFloat(args[i].value); } }
+    if (args[i].id == "lat") { if (args[i].value) { myLat = parseFloat(args[i].value); } }
+  }
+
+  pano.loadedScene.id = myID;
+  pano.loadedScene.texture = myTexture;
+  pano.loadedScene.lon = myLon;
+  pano.loadedScene.lat = myLat;
+
+  // reload scene?
+  debugAddSceneLinks();
+  pano.loadedScene.loadTexture();
+
+}
 
 
 
@@ -232,16 +295,8 @@ function debugGenerateXML ()
 
     for (var j = 0; j < pano.scenes[i].hotspots.length; j++) {
 
-       var h = pano.scenes[i].hotspots[j];
        xml += "\t\t";
-       xml += '<hotspot id="' + h.id + '" ';
-       xml += 'lon="' + (h.lon).toFixed(2) + '" ';
-       xml += 'lat="' + (h.lat).toFixed(2) + '" ';
-       if (h.title) { xml += 'title="'+ h.title + '" '; }
-       if (h.link && h.link != h.id) { xml += 'link="'+ h.link + '" '; }
-       if (h.sceneLat) { xml += 'sceneLat="'+ h.sceneLat + '" '; }
-       if (h.sceneLon) { xml += 'sceneLon="'+ h.sceneLon + '" '; }
-       xml += '></hotspot>';
+       xml += pano.scenes[i].hotspots[j].getXML();
        xml += "\n";
 
     }
@@ -252,7 +307,70 @@ function debugGenerateXML ()
 
   xml += "</scenes>";
 
-  console.log(xml);
+  var xmlPopup = new Popup({ title:"XML data for scenes.xml", width:"500px" });
+  xmlPopup.addField({ label:"xml", id:"xml", type:"textarea", value:xml, height:"300px" });
+  xmlPopup.addButton({ type:"cancel" });
+  xmlPopup.show();
+
+}
+
+
+
+
+function panoHotspotClicked () {
+  pano.clickedHotspot.clicked();
+}
+
+
+
+
+function panoHotspotUpdate (args) {
+
+  var id = "";
+  var link = "";
+  var title = ";"
+  var sceneLon = 0;
+  var sceneLat = 0;
+
+  for (var i = 0; i < args.length; i++) {
+    if (args[i].id == "id") { id = args[i].value; }
+    if (args[i].id == "link") { link = args[i].value; }
+    if (args[i].id == "title") { title = args[i].value; }
+    if (args[i].id == "sceneLon") { sceneLon = parseFloat(args[i].value); }
+    if (args[i].id == "sceneLat") { sceneLat = parseFloat(args[i].value); }
+  }
+
+  var originalID = pano.clickedHotspot.id;
+  pano.clickedHotspot.id = id;
+  pano.clickedHotspot.link = link;
+  pano.clickedHotspot.title = title;
+  pano.clickedHotspot.sceneLon = sceneLon;
+  pano.clickedHotspot.sceneLat = sceneLat;
+
+  // update html element
+  var el = document.getElementById("overlay-" + originalID);
+  el.id = "overlay-" + id;
+  el.title = title;
+
+}
+
+
+
+function panoHotspotDelete (args)
+{
+  pano.clickedHotspot.delete();
+}
+
+
+
+function panoHotspotShowXML ()
+{
+
+  var xml = pano.clickedHotspot.getXML();
+  var xmlPopup = new Popup({ title:"XML data for hotspot", width:"500px" });
+  xmlPopup.addField({ label:"xml", id:"xml", type:"textarea", value:xml, height:"300px" });
+  xmlPopup.addButton({ type:"cancel" });
+  xmlPopup.show();
 
 }
 
