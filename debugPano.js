@@ -63,6 +63,7 @@ function iniDebug () {
 
   h += '<style>';
   h += '.debugButton { background-color:#d4d4d4; color:#666666; margin:4px 10px; padding:4px; border:none; cursor:pointer; font-size:11px; }';
+  h += '.fieldTitle { font-size:12px; color:#666666;}';
   h += '</style>';
 
   h += '<div style="font-size:12px; font-weight:bold;">Scenes:</div>';
@@ -75,6 +76,14 @@ function iniDebug () {
   h += '<button class="debugButton" onclick="addHotspotPopup.show();">Add Hotspot</button>';
   h += '<button class="debugButton" onclick="debugGenerateXML();">Generate XML</button>';
   h += '<button class="debugButton" onclick="debugShowPanoInfo();">Pano Info</button>';
+
+  h += '<hr />';
+
+  h += '<table>';
+  h += '<tr> <td class="fieldTitle">Lon:</td> <td><input id="debugLon" type="number" value="0" /></td> </tr>';
+  h += '<tr> <td class="fieldTitle">Lat:</td> <td><input id="debugLat" type="number" value="0" /></td> </tr>';
+  h += '</table>';
+  h += '<button class="debugButton" onclick="debugStorePanoInfo();">Store Info</button>';
 
   el.innerHTML = h;
 
@@ -93,11 +102,18 @@ function debugToggle ()
 }
 
 
+function debugStorePanoInfo ()
+{
+  document.getElementById("debugLon").value = pano.lon.toFixed(2);
+  document.getElementById("debugLat").value = pano.lat.toFixed(2);
+}
+
+
 function debugSetScenePosition ()
 {
-  pano.loadedScene.lon = pano.lon;
-  pano.loadedScene.lat = pano.lat;
-  console.log("OK");
+  pano.loadedScene.lon = parseFloat(pano.lon.toFixed(2));
+  pano.loadedScene.lat = parseFloat(pano.lat.toFixed(2));
+  new Message({ text:"Scene position updated OK" });
 }
 
 
@@ -217,22 +233,6 @@ function debugAddScene (args)
 
 
 
-/*
-function debugAddSceneOLD ()
-{
-
-  var myID = document.getElementById("scene-id").value || "scene-" + Math.round(Math.random() * 100000);
-  var myTexture = document.getElementById("scene-texture").value || "i2.jpg";
-  var myLon = 0;
-  var myLat = 0;
-  var panoScene = new PanoScene({ id:myID, texture:myTexture, lon:myLon, lat:myLat });
-  pano.scenes.push(panoScene);
-
-  debugAddSceneLinks();
-
-}
-*/
-
 
 
 
@@ -270,8 +270,6 @@ function debugAddHotspot (args)
      if (args[i].id == "lon") { if (args[i].value) { myLon = parseFloat(args[i].value); } }
      if (args[i].id == "lat") { if (args[i].value) { myLat = parseFloat(args[i].value); } }
    }
-
-   console.log(myLink);
 
    pano.loadedScene.addHotspot({ id:myID, link:myLink, title:myTitle, lon:myLon, lat:myLat }, true);
 

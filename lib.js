@@ -23,6 +23,12 @@ var pano = new Pano(); // global ref must me called pano
 
 
 
+
+
+
+
+
+
 function loadXML ()
 {
 
@@ -311,17 +317,7 @@ function positionOverlays ()
   for (var i = 0; i < pano.loadedScene.hotspots.length; i++) {
 
     var hs = pano.loadedScene.hotspots[i];
-    //hs.positionMyElement();
     hs.animate();
-
-    /*
-    var hsPosition = pano.getPosition(hs.lon, hs.lat);
-    hsPosition = [hsPosition.x, hsPosition.y, hsPosition.z];
-    var pos = pano.toScreenPosition(hsPosition, camera);
-    var xPos = pos.x - (hs.imgW / 2);
-    var yPos = pos.y - (hs.imgH / 2);
-    $('#overlay-' + hs.id).css({ 'left': xPos + 'px', 'top': yPos + 'px' });
-    */
 
   }
 
@@ -410,9 +406,8 @@ function eventMove (e)
 function eventStop (e)
 {
 
-  e.preventDefault();
+  //e.preventDefault(); // is this needed?
   pano.activeControl = false;
-  //dummy.beingDragged = false;
   var clickTolerance = 2;
   pano.active = false;
 

@@ -2,14 +2,19 @@
 
 <scenes>
 
-	<scene id="e1" image="e1.jpg" lon="207" lat="3.8">
+	<scene id="e1" image="e1.jpg" lon="213.4" lat="-7.6">
 		<hotspot id="i2" lon="-26.30" lat="16.30" title="interior" ></hotspot>
 		<hotspot id="cockpit" lon="-49.20" lat="23.20" link="i2" sceneLat="5.7" sceneLon="220" ></hotspot>
-		<hotspot id="window" lon="14.10" lat="17.60" link="i2" sceneLat="8.3" sceneLon="35.8" ></hotspot>
+		<hotspot id="window" lon="-10.40" lat="-7.30" link="bay" ></hotspot>
 	</scene>
 
 	<scene id="i2" image="i2.jpg" lon="132" lat="3.5">
 		<hotspot id="e1" lon="-130.50" lat="-23.90" sceneLat="-0.5" sceneLon="138" ></hotspot>
+		<hotspot id="hotspot-47019" lon="-38.90" lat="-19.10" title="Avionics Bay" link="bay" ></hotspot>
+	</scene>
+
+	<scene id="bay" image="bay.jpg" lon="88" lat="33.2">
+		<hotspot id="hotspot-99960" lon="88.30" lat="-39.50" link="e1" ></hotspot>
 	</scene>
 
 </scenes>

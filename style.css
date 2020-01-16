@@ -43,14 +43,13 @@ body {
 #controls-container {
   position:absolute; left:100px; bottom:0px;
   width:320px; height:94px;
-  /* background-color:#e2e2e2; */
+  background-color:rgba(100, 100, 100, 0.1);
 }
 
 .pano-button {
   position:absolute;
   width:32px; height:32px;
   cursor:pointer;
-  /* background-color:#f9423a; border-radius:16px; */
 }
 
 

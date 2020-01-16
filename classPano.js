@@ -1,12 +1,8 @@
 
 
-
-//TODO: debugElement - add show pano info button
-//TODO add copy position button, so you can store pano position to use on a hotspot
-
-//TODO: add message element, use setImeout to remove after X seconds
-
 //TODO: are loading messages showing up, using jQuery?
+//TODO: Test with debugMode = false;
+
 
 
 
