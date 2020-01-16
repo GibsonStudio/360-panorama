@@ -1,7 +1,7 @@
 
 
-//TODO: are loading messages showing up, using jQuery?
-//TODO: Test with debugMode = false;
+//TODO: are loading messages showing up, using jQuery? - yes, is this OK?
+
 
 
 
