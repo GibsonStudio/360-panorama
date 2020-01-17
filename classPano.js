@@ -2,7 +2,7 @@
 
 //TODO: are loading messages showing up, using jQuery? - yes, is this OK?
 
-
+//TODO: git, can you have a remote on the L drive?
 
 
 
